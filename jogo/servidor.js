@@ -3,8 +3,17 @@ const app = express();
 const server = require("http").Server(app);
 const io = require("socket.io")(server);
 const PORT = process.env.PORT || 3000;
+const conn_limit = 100;
 
-io.on("connection", (socket) => {
+io.on("connection",(socket)=>{
+  server.on("registro",(id)=>{
+    if(conn_limit>io.sockets.adapter.sids.size){ //aqui foi estabelecido um limite de jogadores com isso ele verifica se é válido
+      socket.emit("acesso_permitido");
+    }else{
+      socket.emit("negado");
+    }
+  });
+  
   socket.on("entrar-na-sala", (sala) => {
     socket.join(sala);
     let jogadores = {};
