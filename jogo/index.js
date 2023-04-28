@@ -1,7 +1,7 @@
 import config from "./config.js";
 import abertura from "./abertura.js";
-import principal from "../adcipt20231editado/principal.js";
-import encerramento from "../adcipt20231editado/encerramento.js";
+import principal from "./principal.js";
+import encerramento from "./encerramento.js";
 
 class Game extends Phaser.Game {
   constructor() {

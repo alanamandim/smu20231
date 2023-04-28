@@ -1,2 +1,9 @@
 image:
   file: .gitpod.Dockerfile
+tasks:
+  - init: npm install --prefix jogo
+    command: npm start --prefix jogo
+
+ports:
+  - port: 3000
+    onOpen: open-browser

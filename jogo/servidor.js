@@ -5,15 +5,15 @@ const io = require("socket.io")(server);
 const PORT = process.env.PORT || 3000;
 const conn_limit = 100;
 
-io.on("connection",(socket)=>{
-  server.on("registro",(id)=>{
-    if(conn_limit>io.sockets.adapter.sids.size){ //aqui foi estabelecido um limite de jogadores com isso ele verifica se é válido
+io.on("connection", (socket) => {
+  socket.on("registro", (id) => {
+    if (conn_limit > io.sockets.adapter.sids.size) { //aqui foi estabelecido um limite de jogadores com isso ele verifica se é válido
       socket.emit("acesso_permitido");
-    }else{
+    } else {
       socket.emit("negado");
     }
   });
-  
+
   socket.on("entrar-na-sala", (sala) => {
     socket.join(sala);
     let jogadores = {};
@@ -41,7 +41,7 @@ io.on("connection",(socket)=>{
   socket.on("candidate", (sala, signal) => {
     socket.broadcast.to(sala).emit("candidate", signal);
   });
-  socket.on("disconnect", () => {});
+  socket.on("disconnect", () => { });
   socket.on("estadoDoJogador", (sala, estado) => {
     socket.broadcast.to(sala).emit("desenharOutroJogador", estado);
   });
