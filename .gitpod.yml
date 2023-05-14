@@ -1,8 +1,8 @@
 image:
   file: .gitpod.Dockerfile
 tasks:
-  - init: npm install --prefix servidor
-    command: npm start --prefix servidor
+  - init: npm install --prefix jogo/servidor
+    command: npm start --prefix jogo/servidor
 
 ports:
   - port: 3000
