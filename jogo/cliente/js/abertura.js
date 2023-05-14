@@ -111,14 +111,14 @@ export default class abertura extends Phaser.Scene {
     this.game.socket.on("jogadores", (jogadores) => {
       if (jogadores.primeiro === this.game.socket.id) {
         navigator.mediaDevices
-          .getUserMedia({ video: false, audio: true })
+          .getUserMedia({ video: true, audio: true })
           .then((stream) => {
             this.game.midias = stream;
           })
           .catch((error) => console.log(error));
       } else if (jogadores.segundo === this.game.socket.id) {
         navigator.mediaDevices
-          .getUserMedia({ video: false, audio: true })
+          .getUserMedia({ video: true, audio: true })
           .then((stream) => {
             this.game.midias = stream;
             this.localConnection = new RTCPeerConnection(this.ice_servers);
