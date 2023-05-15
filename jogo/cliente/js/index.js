@@ -19,7 +19,7 @@ class Game extends Phaser.Game {
       this.registro = false;
     });
 
-    this.ice_servers = {
+    this.ice_servers = { // consulte o stun do google ( tem NAT, qual tipo e qual o provável end de rede e de transporte)
       iceServers: [
         {
           urls: "stun:stun.l.google.com:19302",
