@@ -21,7 +21,7 @@ io.on("connection", (socket) => {
     if (io.sockets.adapter.rooms.get(sala).size > room_limit) {
       socket.leave(sala);
     } else {
-      io.to(sala).emit("jogadores", Array.from(io.sockets.adapter.rooms.get(sala)))
+      io.to(sala).emit("jogadores", Array.from(io.sockets.adapter.rooms.get(sala)));
     };
     
     
@@ -38,9 +38,17 @@ io.on("connection", (socket) => {
   //socket.on("candidate", (sala, signal) => {
   //  socket.broadcast.to(sala).emit("candidate", signal);
   //});
-  socket.on("offer", (sala, description) => {
-  socket.broadcast.to(sala).emit("candidate", signal);
-});
+  socket.on("offer", (from, to, description) => {
+    io.to(to).emit("offer", from, to, description);
+  });
+   // Sinalização de áudio: atendimento da oferta
+  socket.on("answer", (sala, description) => {
+    socket.broadcast.to(sala).emit("answer", description);
+  });
+  // Sinalização de áudio: envio dos candidatos de caminho
+  socket.on("candidate", (sala, signal) => {
+    socket.broadcast.to(sala).emit("candidate", signal);
+  });
   // Disparar evento quando jogador sair da partida
   socket.on("disconnect", () => { 
     Array.from(socket.rooms)
