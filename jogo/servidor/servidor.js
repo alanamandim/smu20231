@@ -3,7 +3,8 @@ const app = express();
 const server = require("http").Server(app);
 const io = require("socket.io")(server);
 const PORT = process.env.PORT || 3000;
-const conn_limit = 100;
+const conn_limit = 1000;
+const room_limit = 10;
 
 //Dispara evento quando jogador entra na partida
 io.on("connection", (socket) => {
@@ -17,43 +18,41 @@ io.on("connection", (socket) => {
 
   socket.on("entrar-na-sala", (sala) => {
     socket.join(sala);
-    let jogadores = {};
-    if (io.sockets.adapter.rooms.get(sala).size === 1) {
-      jogadores = {
-        primeiro: socket.id,
-        segundo: undefined,
-      };
-    } else if (io.sockets.adapter.rooms.get(sala).size === 2) {
-      let [primeiro] = io.sockets.adapter.rooms.get(sala);
-      jogadores = {
-        primeiro: primeiro,
-        segundo: socket.id,
-      };
-    }
-    console.log("Sala %s: %s", sala, jogadores);
-    io.to(sala).emit("jogadores", jogadores);
+    if (io.sockets.adapter.rooms.get(sala).size > room_limit) {
+      socket.leave(sala);
+    } else {
+      io.to(sala).emit("jogadores", Array.from(io.sockets.adapter.rooms.get(sala)))
+    };
+    
+    
   });
   // Sinalização de áudio: oferta
-  socket.on("offer", (sala, description) => {
-    socket.broadcast.to(sala).emit("offer", socket.id, description);
-  });
+  //socket.on("offer", (sala, description) => {
+   // socket.broadcast.to(sala).emit("offer", socket.id, description);
+ // });
   // Sinalização de áudio: atendimento da oferta
-  socket.on("answer", (sala, description) => {
-    socket.broadcast.to(sala).emit("answer", description);
-  });
+  //socket.on("answer", (sala, description) => {
+   // socket.broadcast.to(sala).emit("answer", description);
+  //});
   // Sinalização de áudio: envio dos candidatos de caminho
-  socket.on("candidate", (sala, signal) => {
-    socket.broadcast.to(sala).emit("candidate", signal);
-  });
+  //socket.on("candidate", (sala, signal) => {
+  //  socket.broadcast.to(sala).emit("candidate", signal);
+  //});
+  socket.on("offer", (sala, description) => {
+  socket.broadcast.to(sala).emit("candidate", signal);
+});
   // Disparar evento quando jogador sair da partida
   socket.on("disconnect", () => { 
-    if (jogadores.primeiro === socket.id) {
-      jogadores.primeiro = undefined;
-    }
-    if (jogadores.segundo === socket.id) {
-      jogadores.segundo = undefined;
-    }
-    io.to(sala).emit("jogadores", jogadores);
+    Array.from(socket.rooms)
+      .filter((sala) => sala !== socket.id)
+      .forEach((sala) => {
+        io.to(sala).emit(
+          "jogadores",
+          Array.from(io.sockets.adapter.rooms.get(sala)).filter(
+            (sid) => sid !== socket.id
+          )
+        );
+      });
   });
   socket.on("estadoDoJogador", (sala, estado) => {
     socket.broadcast.to(sala).emit("desenharOutroJogador", estado);
