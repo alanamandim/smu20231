@@ -88,16 +88,27 @@ export default class registro extends Phaser.Scene {
                     } else {
                         console.log("Usuário não registrado no servidor.");
                     }
+                    navigator.mediaDevices
+                        .getUserMedia({ video: false, audio: true })
+                        .then((stream) => {
+                            console.log(stream);
+                            this.game.midias = stream;
+                        })
+                        .catch((error) => console.log(error));
+
                 });
         });
+        
 
         this.game.socket.on("jogadores", (jogadores) => {
-            this.game.jogadores = jogadores;
-            this.mensagem.destroy();
-            this.salas.forEach((item) => {
-                item.botao.destroy();
-            });
-            this.game.scene.start("presença");
+            if (jogadores.length === 3) {
+                this.game.jogadores = jogadores;
+                this.mensagem.destroy();
+                this.salas.forEach((item) => {
+                    item.botao.destroy();
+                });
+                this.game.scene.start("presença");
+            }
         });
     }
 }
