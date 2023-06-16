@@ -108,6 +108,8 @@ export default class registro extends Phaser.Scene {
                     item.botao.destroy();
                 });
                 this.game.scene.start("presença");
+            } else if (jogadores.length < 3) {
+                console.log("Aguarde");
             }
         });
     }
