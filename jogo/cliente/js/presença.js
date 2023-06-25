@@ -38,7 +38,7 @@ export default class presenca extends Phaser.Scene {
                             this.localConnection1.localDescription
                         );
                     });
-                
+
                 this.localConnection2 = new RTCPeerConnection(this.game.ice_servers);
 
                 this.game.midias
@@ -100,7 +100,7 @@ export default class presenca extends Phaser.Scene {
                         );
                     });
 
-                
+
             }
 
             if (jogador === this.game.socket.id) {
@@ -177,20 +177,20 @@ export default class presenca extends Phaser.Scene {
         });
 
         this.game.socket.on("answer", (from, to, description) => {
-            this.localConnection.setRemoteDescription(description);
+            this.localConnection1.setRemoteDescription(description);
         });
 
         this.game.socket.on("candidate", (from, to, candidate) => {
-            let conn = this.localConnection || this.remoteConnection;
+            let conn = this.localConnection1 || this.remoteConnection;
             conn.addIceCandidate(new RTCIceCandidate(candidate));
         });
 
         this.game.socket.on("answer1", (from, to, description) => {
-            this.localConnection.setRemoteDescription(description);
+            this.localConnection2.setRemoteDescription(description);
         });
 
         this.game.socket.on("candidate1", (from, to, candidate) => {
-            let conn = this.localConnection1 || this.remoteConnection1;
+            let conn = this.localConnection2 || this.remoteConnection1;
             conn.addIceCandidate(new RTCIceCandidate(candidate));
         });
     }

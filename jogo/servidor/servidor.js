@@ -54,29 +54,29 @@ io.on("connection", (socket) => {
     io.to(to).emit("offer1", from, to, description);
   });
   // Sinalização de áudio: atendimento da oferta
-  socket.on("answer1", { from: from, to: to, description: description }) => {
+  socket.on("answer1", ({ from: from, to: to, description: description }) => {
     socket.to(to).emit("answer1", description);
   });
-// Sinalização de áudio: envio dos candidatos de caminho
-socket.on("candidate1", ({ from: from, to: to, candidate: candidate }) => {
-  socket.to(to).emit("candidate1", signal);
-});
-// Disparar evento quando jogador sair da partida
-socket.on("disconnect", () => {
-  Array.from(socket.rooms)
-    .filter((sala) => sala !== socket.id)
-    .forEach((sala) => {
-      io.to(sala).emit(
-        "jogadores",
-        Array.from(io.sockets.adapter.rooms.get(sala)).filter(
-          (sid) => sid !== socket.id
-        )
-      );
-    });
-});
-socket.on("estadoDoJogador", (sala, estado) => {
-  socket.broadcast.to(sala).emit("desenharOutroJogador", estado);
-});
+  // Sinalização de áudio: envio dos candidatos de caminho
+  socket.on("candidate1", ({ from: from, to: to, candidate: candidate }) => {
+    socket.to(to).emit("candidate1", signal);
+  });
+  // Disparar evento quando jogador sair da partida
+  socket.on("disconnect", () => {
+    Array.from(socket.rooms)
+      .filter((sala) => sala !== socket.id)
+      .forEach((sala) => {
+        io.to(sala).emit(
+          "jogadores",
+          Array.from(io.sockets.adapter.rooms.get(sala)).filter(
+            (sid) => sid !== socket.id
+          )
+        );
+      });
+  });
+  socket.on("estadoDoJogador", (sala, estado) => {
+    socket.broadcast.to(sala).emit("desenharOutroJogador", estado);
+  });
 });
 
 app.use(express.static("../cliente/"));
