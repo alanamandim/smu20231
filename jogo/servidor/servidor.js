@@ -26,40 +26,29 @@ io.on("connection", (socket) => {
 
 
   });
-  // Sinalização de áudio: oferta
-  //socket.on("offer", (sala, description) => {
-  // socket.broadcast.to(sala).emit("offer", socket.id, description);
-  // });
-  // Sinalização de áudio: atendimento da oferta
-  //socket.on("answer", (sala, description) => {
-  // socket.broadcast.to(sala).emit("answer", description);
-  //});
-  // Sinalização de áudio: envio dos candidatos de caminho
-  //socket.on("candidate", (sala, signal) => {
-  //  socket.broadcast.to(sala).emit("candidate", signal);
-  //});
-  socket.on("offer", (from, to, description) => {
-    io.to(to).emit("offer", from, to, description);
+  
+  socket.on("offer", ({ from, to, description }) => {
+    io.to(to).emit("offer", { from: from, to: to, description: description });
   });
   // Sinalização de áudio: atendimento da oferta
-  socket.on("answer", (to, description) => {
-    socket.to(to).emit("answer", description);
+  socket.on("answer", ({ from, to, description }) => {
+    socket.to(to).emit("answer", { from: from, to: to, description: description });
   });
   // Sinalização de áudio: envio dos candidatos de caminho
-  socket.on("candidate", (to, signal) => {
-    socket.to(to).emit("candidate", signal);
+  socket.on("candidate", ({ from, to, candidate }) => {
+    socket.to(to).emit("candidate",{from: from, to: to, candidate: candidate} );
   });
 
   socket.on("offer1", (from, to, description) => {
     io.to(to).emit("offer1", from, to, description);
   });
   // Sinalização de áudio: atendimento da oferta
-  socket.on("answer1", ({ from: from, to: to, description: description }) => {
-    socket.to(to).emit("answer1", description);
+  socket.on("answer1", (from, to, description) => {
+    socket.to(to).emit("answer1", { from: from, to: to, description: description });
   });
   // Sinalização de áudio: envio dos candidatos de caminho
-  socket.on("candidate1", ({ from: from, to: to, candidate: candidate }) => {
-    socket.to(to).emit("candidate1", signal);
+  socket.on("candidate1", ({ from, to, candidate}) => {
+    socket.to(to).emit("candidate1", { from: from, to: to, candidate: candidate });
   });
   // Disparar evento quando jogador sair da partida
   socket.on("disconnect", () => {
