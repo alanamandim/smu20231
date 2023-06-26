@@ -21,8 +21,8 @@ export default class presenca extends Phaser.Scene {
                 this.localConnection1.onicecandidate = ({ candidate }) => {
                     candidate &&
                         this.game.socket.emit("candidate", {
-                            to: this.socket.id,
-                            from: this.jogadores[1],
+                            from: this.game.socket.id,
+                            to: this.game.jogadores[1],
                             candidate: candidate
                         });
                 };
@@ -54,8 +54,8 @@ export default class presenca extends Phaser.Scene {
                 this.localConnection2.onicecandidate = ({ candidate }) => {
                     candidate &&
                         this.game.socket.emit("candidate1", {
-                            to: this.socket.id,
-                            from: this.jogadores[1],
+                            from: this.game.socket.id,
+                            to: this.game.jogadores[1],
                             candidate: candidate
                         });
                     
@@ -91,8 +91,8 @@ export default class presenca extends Phaser.Scene {
                 this.localConnection2.onicecandidate = ({ candidate }) => {
                     candidate &&
                         this.game.socket.emit("candidate1", {
-                            to: this.socket.id,
-                            from: this.jogadores[2],
+                            from: this.game.socket.id,
+                            to: this.game.jogadores[2],
                             candidate: candidate
                         });
                 };
@@ -106,11 +106,11 @@ export default class presenca extends Phaser.Scene {
                     .then((offer) => this.localConnection2.setLocalDescription(offer))
                     .then(() => {
                         this.game.socket.emit(
-                            "offer1",
-                            this.game.socket.id, // from
-                            this.game.jogadores[2], // to
-                            this.localConnection2.localDescription
-                        );
+                            "offer1",{
+                            from: this.game.socket.id, // from
+                            to: this.game.jogadores[2], // to
+                            description: this.localConnection2.localDescription
+                    });
                     });
 
 
@@ -138,8 +138,8 @@ export default class presenca extends Phaser.Scene {
 
             this.remoteConnection.onicecandidate = ({ candidate }) => {
                 candidate && this.game.socket.emit("candidate", {
-                    to: from,
                     from: to,
+                    to: from,
                     candidate: candidate
                 });
             };
@@ -155,8 +155,8 @@ export default class presenca extends Phaser.Scene {
                 .then(() => {
                     this.game.socket.emit(
                         "answer", {
-                        to: from,
                         from: to,
+                        to: from,
                         description: this.remoteConnection.localDescription
                     });
                 });
@@ -173,8 +173,8 @@ export default class presenca extends Phaser.Scene {
 
             this.remoteConnection1.onicecandidate = ({ candidate }) => {
                 candidate && this.game.socket.emit("candidate1", {
-                    to: from,
                     from: to,
+                    to: from,
                     candidate: candidate
                 });
             };
@@ -190,9 +190,9 @@ export default class presenca extends Phaser.Scene {
                 .then(() => {
                     this.game.socket.emit(
                         "answer1", {
-                        to: from,
-                        from: to,
-                        description: this.remoteConnection1.localDescription
+                            from: to,
+                            to: from,
+                            description: this.remoteConnection1.localDescription
                     });
                 });
         });
