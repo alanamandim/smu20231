@@ -77,15 +77,15 @@ export default class presenca extends Phaser.Scene {
 
             } else if (indice === 1 && jogador === this.game.socket.id) {
                 //disca para  2 
-                this.localConnection1 = new RTCPeerConnection(this.game.ice_servers);
+                this.localConnection2 = new RTCPeerConnection(this.game.ice_servers);
 
                 this.game.midias
                     .getTracks()
                     .forEach((track) =>
-                        this.localConnection1.addTrack(track, this.game.midias)
+                        this.localConnection2.addTrack(track, this.game.midias)
                     );
 
-                this.localConnection1.onicecandidate = ({ candidate }) => {
+                this.localConnection2.onicecandidate = ({ candidate }) => {
                     candidate &&
                         this.game.socket.emit("candidate1", {
                             from: this.game.socket.id,
@@ -94,19 +94,19 @@ export default class presenca extends Phaser.Scene {
                         });
                 };
 
-                this.localConnection1.ontrack = ({ streams: [stream] }) => {
+                this.localConnection2.ontrack = ({ streams: [stream] }) => {
                     this.game.audio.srcObject = stream;
                 };
 
-                this.localConnection1
+                this.localConnection2
                     .createOffer()
-                    .then((offer) => this.localConnection1.setLocalDescription(offer))
+                    .then((offer) => this.localConnection2.setLocalDescription(offer))
                     .then(() => {
                         this.game.socket.emit(
                             "offer1", {
                             from: this.game.socket.id, // from
                             to: this.game.jogadores[2], // to
-                            description: this.localConnection1.localDescription
+                            description: this.localConnection2.localDescription
                         });
                     });
 
