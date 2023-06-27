@@ -6,7 +6,6 @@ export default class presenca extends Phaser.Scene {
     preload() { }
 
     create() {
-
         this.jogadores = this.game.jogadores.forEach((jogador, indice) => {
             if (indice === 0 && jogador === this.game.socket.id) {
                 //discar para 1 e 2
@@ -55,10 +54,9 @@ export default class presenca extends Phaser.Scene {
                     candidate &&
                         this.game.socket.emit("candidate1", {
                             from: this.game.socket.id,
-                            to: this.game.jogadores[1],
+                            to: this.game.jogadores[2],
                             candidate: candidate
                         });
-                    
                 };
 
                 this.localConnection2.ontrack = ({ streams: [stream] }) => {
@@ -77,18 +75,17 @@ export default class presenca extends Phaser.Scene {
                         });
                     });
 
-            }
-            else if (indice === 1 && jogador === this.game.socket.id) {
+            } else if (indice === 1 && jogador === this.game.socket.id) {
                 //disca para  2 
-                this.localConnection2 = new RTCPeerConnection(this.game.ice_servers);
+                this.localConnection1 = new RTCPeerConnection(this.game.ice_servers);
 
                 this.game.midias
                     .getTracks()
                     .forEach((track) =>
-                        this.localConnection2.addTrack(track, this.game.midias)
+                        this.localConnection1.addTrack(track, this.game.midias)
                     );
 
-                this.localConnection2.onicecandidate = ({ candidate }) => {
+                this.localConnection1.onicecandidate = ({ candidate }) => {
                     candidate &&
                         this.game.socket.emit("candidate1", {
                             from: this.game.socket.id,
@@ -97,20 +94,20 @@ export default class presenca extends Phaser.Scene {
                         });
                 };
 
-                this.localConnection2.ontrack = ({ streams: [stream] }) => {
+                this.localConnection1.ontrack = ({ streams: [stream] }) => {
                     this.game.audio.srcObject = stream;
                 };
 
-                this.localConnection2
+                this.localConnection1
                     .createOffer()
-                    .then((offer) => this.localConnection2.setLocalDescription(offer))
+                    .then((offer) => this.localConnection1.setLocalDescription(offer))
                     .then(() => {
                         this.game.socket.emit(
-                            "offer1",{
+                            "offer1", {
                             from: this.game.socket.id, // from
                             to: this.game.jogadores[2], // to
-                            description: this.localConnection2.localDescription
-                    });
+                            description: this.localConnection1.localDescription
+                        });
                     });
 
 
@@ -127,7 +124,7 @@ export default class presenca extends Phaser.Scene {
             }
         });
 
-        this.game.socket.on("offer", (from, to, description) => {
+        this.game.socket.on("offer", ({ from, to, description }) => {
             this.remoteConnection = new RTCPeerConnection(this.game.ice_servers);
 
             this.game.midias
@@ -137,11 +134,12 @@ export default class presenca extends Phaser.Scene {
                 );
 
             this.remoteConnection.onicecandidate = ({ candidate }) => {
-                candidate && this.game.socket.emit("candidate", {
-                    from: to,
-                    to: from,
-                    candidate: candidate
-                });
+                candidate && this.game.socket.emit("candidate",
+                    {
+                        from: to,
+                        to: from,
+                        candidate: candidate
+                    });
             };
 
             this.remoteConnection.ontrack = ({ streams: [stream] }) => {
@@ -158,11 +156,12 @@ export default class presenca extends Phaser.Scene {
                         from: to,
                         to: from,
                         description: this.remoteConnection.localDescription
-                    });
+                    }
+                    );
                 });
         });
 
-        this.game.socket.on("offer1", (from, to, description) => {
+        this.game.socket.on("offer1", ({ from, to, description }) => {
             this.remoteConnection1 = new RTCPeerConnection(this.game.ice_servers);
 
             this.game.midias
@@ -190,9 +189,9 @@ export default class presenca extends Phaser.Scene {
                 .then(() => {
                     this.game.socket.emit(
                         "answer1", {
-                            from: to,
-                            to: from,
-                            description: this.remoteConnection1.localDescription
+                        from: to,
+                        to: from,
+                        description: this.remoteConnection1.localDescription
                     });
                 });
         });
@@ -206,7 +205,7 @@ export default class presenca extends Phaser.Scene {
             conn.addIceCandidate(new RTCIceCandidate(candidate));
         });
 
-        this.game.socket.on("answer1", ({from, to, description}) => {
+        this.game.socket.on("answer1", ({ from, to, description }) => {
             this.localConnection2.setRemoteDescription(description);
         });
 
@@ -215,6 +214,4 @@ export default class presenca extends Phaser.Scene {
             conn.addIceCandidate(new RTCIceCandidate(candidate));
         });
     }
-
-    update() { }
 }

@@ -1,15 +1,15 @@
 export default class abertura extends Phaser.Scene {
   constructor() {
     super("abertura");
-//    this.ice_servers = {
-//      iceServers: [
-//        {
-//          urls: "stun:stun.l.google.com:19302",
-//        },
-//      ],
-//    };
-//    this.audio = document.querySelector("audio");
-//    this.midias = undefined
+    //    this.ice_servers = {
+    //      iceServers: [
+    //        {
+    //          urls: "stun:stun.l.google.com:19302",
+    //        },
+    //      ],
+    //    };
+    //    this.audio = document.querySelector("audio");
+    //    this.midias = undefined
   }
 
   preload() {
@@ -103,8 +103,8 @@ export default class abertura extends Phaser.Scene {
         if (this.game.registro) {
           this.game.socket.emit("entrar-na-sala", this.sala);
         }
-        else{
-          console.log ("Acesso negado ")
+        else {
+          console.log("Acesso negado ")
         }
       });
     });
@@ -141,7 +141,7 @@ export default class abertura extends Phaser.Scene {
           })
           .catch((error) => console.log(error));
       }
-      
+
       if (jogadores.primeiro !== undefined && jogadores.segundo !== undefined) {
         this.mensagem.destroy();
         this.grade.destroy();
@@ -181,5 +181,5 @@ export default class abertura extends Phaser.Scene {
     });
   }
 
-  upload() {}
+  upload() { }
 }

@@ -98,7 +98,7 @@ export default class registro extends Phaser.Scene {
 
                 });
         });
-        
+
 
         this.game.socket.on("jogadores", (jogadores) => {
             if (jogadores.length === 3) {
