@@ -17,7 +17,6 @@ export default class presenca extends Phaser.Scene {
           const to = this.game.jogadores[num]
 
           this.localConnection[to] = { conn: new RTCPeerConnection(this.game.ice_servers) }
-          console.log(this.localConnection)
 
           this.game.midias
             .getTracks()
@@ -87,15 +86,10 @@ export default class presenca extends Phaser.Scene {
         )
 
       this.remoteConnection[from].conn.onicecandidate = ({ candidate }) => {
-        candidate && this.game.socket.emit('candidate',
-          {
-            from: to,
-            to: from,
-            candidate
-          })
+        candidate && this.game.socket.emit('candidate', { from: to, to: from, candidate })
       }
 
-      this.remoteConnection[from].conn.ontrack = ({ streams: [stream] }) => {
+      this.remoteConnection[from].conn.oconsntrack = ({ streams: [stream] }) => {
         this.game.audio.srcObject = stream
       }
 
@@ -113,8 +107,8 @@ export default class presenca extends Phaser.Scene {
     })
 
     this.game.socket.on('candidate', ({ from, to, candidate }) => {
-      const conn = this.localConnection[from].conn || this.remoteConnection[to].conn
-      conn.addIceCandidate(new RTCIceCandidate(candidate))
+      const connection = this.localConnection[from] || this.remoteConnection[from]
+      connection.conn.addIceCandidate(new RTCIceCandidate(candidate))
     })
   }
 }
